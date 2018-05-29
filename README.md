@@ -1,19 +1,25 @@
-<h1 align='center'>Ossify</h1>
+<h1 align = 'center'>Ossify</h1>
 <p>Ossify is a Windows 10 PowerShell script that safeguards user's data, hardens security, and allows greater customization.</p>
 
-<h2>Features</h2>
+<h1 align = 'center'>Features</h1>
 
-# Safeguards User's Data
+<h2>Safeguards User's Data</h2>
+<p>
 - Point A
 - Point B
 - Point C
+</p>
 
-# Hardens Security
+<h2>Hardens Security</h2>
+<p>
 - Point A
 - Point B
 - Point C
+  </p>
 
-# Customization
+<h2>Customization</h2>
+<p>
 - Point A
 - Point B
 - Point C
+</p>
