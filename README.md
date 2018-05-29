@@ -5,18 +5,18 @@
 
 <h3>Safeguards Data</h3>
 
-- Point A
+- Utilize Local Security Policy
 - Point B
 - Point C
 
 <h3>Hardens Security</h3>
 
-- Restricts Windows Firewall
-- Applies least priviledge ideas
-- Reduces attacking surface by removing unneeded applications
+- Filter with Windows Firewall
+- Disable vulnerable services
+- Remove unneeded applications
 
 <h3>Enhanced Customization</h3>
 
 - Configure Context Menu items
-- Point B
+- Enable Windows dark theme
 - Point C
