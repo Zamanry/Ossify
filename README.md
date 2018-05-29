@@ -1,25 +1,22 @@
 <h1 align = 'center'>Ossify</h1>
-<p>Ossify is a Windows 10 PowerShell script that safeguards user's data, hardens security, and allows greater customization.</p>
+<p>Ossify is a Windows 10 PowerShell script that safeguards data, hardens security, and enhances customization.</p>
 
 <h1 align = 'center'>Features</h1>
 
-<h2>Safeguards User's Data</h2>
-<p>
-- Point A
-- Point B
-- Point C
-</p>
+<h3>Safeguards Data</h3>
 
-<h2>Hardens Security</h2>
-<p>
 - Point A
 - Point B
 - Point C
-  </p>
 
-<h2>Customization</h2>
-<p>
-- Point A
+<h3>Hardens Security</h3>
+
+- Restricts Windows Firewall
+- Applies least priviledge ideas
+- Reduces attacking surface by removing unneeded applications
+
+<h3>Enhanced Customization</h3>
+
+- Configure Context Menu items
 - Point B
 - Point C
-</p>
