@@ -1,13 +1,6 @@
-﻿# Created by Zamanry, 05/2018
-# Purposes:
-#      To customize Microsoft Windows 10 OS
-#      To harden the OS' security
-#      To increase user data privacy
-# Final words:
-#      All items will be clearly commented on
-#      Therefore, removal of any desired lines will be simple
+# Initially created by Zamanry, 05/2018
 
-#Customizing Context Menus
+#Customizing Context Menus:
 
 #Removal of 'Send to'
 Set-ItemProperty -Path "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\Send To" -Name (Default) -Value $NULL -Force 
@@ -27,7 +20,7 @@ Remove-item -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell -name Personalize
 Set-Owner -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell\Display -Recurse
 Remove-item -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell -name Display
 
-#Removal of built-in Windows apps
+#Removal of built-in apps:
 $Apps =
 'Microsoft.3DBuilder',
 'Microsoft.Appconnector',
