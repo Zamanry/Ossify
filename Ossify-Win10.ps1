@@ -1,4 +1,4 @@
-# Initially created by Zamanry, 05/2018
+#Initially created by Zamanry, 05/2018
 
 #Customizing Context Menus:
 
@@ -107,15 +107,12 @@ $Apps =
 $Index = 0
 $CrntApp = $Apps[$Index]
 
-do
-{
+do {
     Get-AppxPackage -Name $Apps -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
 
     $Index++
     $CrntApp = $Apps[$Index]
-
-}
-while ($CrntApp -ne $NULL)
+} while ($CrntApp -ne $NULL)
 
 #Disable unnecessary network components
 Write-Host Disabling network components.
@@ -150,48 +147,70 @@ Wmic recoveros set DebugInfoType = 0
 #Disable File Explorer Sharing Wizard
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SharingWizardOn" -Value 0
 
+DisableProtocol() {
+    if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" == false) {
+        New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols" -name "$Protocol" -Type Directory
+    }
+    else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Client" == false) {
+        New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" -name "Client" -Type Directory
+    }
+    else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" == false) {
+        New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" -name "Server" -Type Directory
+    }
+    else {
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocoll\Client" -Type DWORD -Name "DisabledByDefault" -Value 1
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Client" -Type DWORD -Name "Enabled" -Value 0
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" -Type DWORD -Name "DisabledByDefault" -Value 1
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" -Type DWORD -Name "Enabled" -Value 0
+    }
+}
+
 #Disable PCT 1.0
-DisableProtocol("PCT 1.0")
+$Protocol = "PCT 1.0"
+DisableProtocol()
 
 #Disable SSL 2.0
-DisableProtocol("SSL 2.0")
+$Protocol = "SSL 2.0"
+DisableProtocol()
 
 #Disable SSL 3.0
-DisableProtocol("SSL 3.0")
+$Protocol = "SSL 3.0"
+DisableProtocol()
 
 #Disable TLS 1.0
-DisableProtocol("TLS 1.0")
+$Protocol = "TLS 1.0"
+DisableProtocol()
 
 #Disable TLS 1.1
-DisableProtocol("TLS 1.1")
+$Protocol = "TLS 1.1"
+DisableProtocol()
 
 #Enable TLS 1.2 (No other SSL or TLS versions are enabled)
-if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" == false)
-{
-    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols" -name "$Prtcrl" -Type Directory
-    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Client" -Type Directory
-    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Server" -Type Directory
+$Protocol = "TLS 1.2"
+if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" == false) {
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols" -name "$Protocol" -Type Directory
 }
-else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Client" == false)
-{
-    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Client" -Type Directory
+else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Client" == false) {
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" -name "Client" -Type Directory
 }
-else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Server" == false)
-{
-    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Server" -Type Directory
+else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" == false) {
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" -name "Server" -Type Directory
 }
-else
-{
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Client" -Type DWORD -Name "DisabledByDefault" -Value 0
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Client" -Type DWORD -Name "Enabled" -Value 1
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Server" -Type DWORD -Name "DisabledByDefault" -Value 0
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Server" -Type DWORD -Name "Enabled" -Value 1
+else {
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocoll\Client" -Type DWORD -Name "DisabledByDefault" -Value 0
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Client" -Type DWORD -Name "Enabled" -Value 1
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" -Type DWORD -Name "DisabledByDefault" -Value 0
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" -Type DWORD -Name "Enabled" -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" -Type DWORD -Name "DefaultSecureProtocols" -Value 0x00000800
     
     #Force .NET Framework 4.0 to use TLS 1.2
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319" -Type DWORD -Name "chUseStrongCrypto" -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" -Type DWORD -Name "chUseStrongCrypto" -Value 1
 }
+
+# Call the desired tweak functions
+Import-Module .\Tweaks.psm1
+$tweaks | ForEach { Invoke-Expression $_ }
 
 #Restricts PowerShell scripts
 Set-ExecutionPolicy restricted
