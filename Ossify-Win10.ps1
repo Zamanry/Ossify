@@ -20,6 +20,9 @@ Remove-item -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell -name Personalize
 Set-Owner -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell\Display -Recurse
 Remove-item -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell -name Display
 
+#Flush DNS
+Ipconfig /flushdns
+
 #Removal of built-in apps:
 $Apps =
 'Microsoft.3DBuilder',
@@ -114,5 +117,81 @@ do
 }
 while ($CrntApp -ne $NULL)
 
-#Prevents 'Suggested Applications' from returning
-Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Cloud Content" "DisableWindowsConsumerFeatures" 1
+#Disable unnecessary network components
+Write-Host Disabling network components.
+Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_tcpip6'
+Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_rspndr'
+Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_lltdio'
+Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_implat'
+Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_msclient'
+Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_pacer'
+Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_server'
+
+#Disable IPv6 completely
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services" -Name "DisabledComponents" -Type DWORD -Value "0xFF" -Force 
+
+#Disable 'Register this connection's addresses in DNS'
+$NIC = Get-WmiObject Win32_NetworkAdapterConfiguration -filter "ipenabled = 'true'"
+$NIC.SetDynamicDNSRegistration($false)
+
+#Disable NetBIOS over TCP/IP
+$NIC.SetTcpipNetbios(2)
+
+#Disable LMHosts lookup
+$NIC = [wmiclass]'Win32_NetworkAdapterConfiguration'
+$NIC.enablewins($false,$false)
+
+#Disables IGMP
+Netsh interface ipv4 set global mldlevel = none
+
+#Disable memory dumps
+Wmic recoveros set DebugInfoType = 0
+
+#Disable File Explorer Sharing Wizard
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SharingWizardOn" -Value 0
+
+#Disable PCT 1.0
+DisableProtocol("PCT 1.0")
+
+#Disable SSL 2.0
+DisableProtocol("SSL 2.0")
+
+#Disable SSL 3.0
+DisableProtocol("SSL 3.0")
+
+#Disable TLS 1.0
+DisableProtocol("TLS 1.0")
+
+#Disable TLS 1.1
+DisableProtocol("TLS 1.1")
+
+#Enable TLS 1.2 (No other SSL or TLS versions are enabled)
+if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" == false)
+{
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols" -name "$Prtcrl" -Type Directory
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Client" -Type Directory
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Server" -Type Directory
+}
+else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Client" == false)
+{
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Client" -Type Directory
+}
+else if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Server" == false)
+{
+    New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl" -name "Server" -Type Directory
+}
+else
+{
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Client" -Type DWORD -Name "DisabledByDefault" -Value 0
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Client" -Type DWORD -Name "Enabled" -Value 1
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Server" -Type DWORD -Name "DisabledByDefault" -Value 0
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Prtcrl\Server" -Type DWORD -Name "Enabled" -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" -Type DWORD -Name "DefaultSecureProtocols" -Value 0x00000800
+    
+    #Force .NET Framework 4.0 to use TLS 1.2
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319" -Type DWORD -Name "chUseStrongCrypto" -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" -Type DWORD -Name "chUseStrongCrypto" -Value 1
+}
+
+#Restricts PowerShell scripts
+Set-ExecutionPolicy restricted
