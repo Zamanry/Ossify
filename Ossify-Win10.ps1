@@ -1,29 +1,49 @@
-#Initially created by Zamanry, 05/2018
+Write-Output ""
+Write-Output "   ██████╗ ███████╗███████╗██╗███████╗██╗   ██╗"
+Write-Output "  ██╔═══██╗██╔════╝██╔════╝██║██╔════╝╚██╗ ██╔╝"
+Write-Output "  ██║   ██║███████╗███████╗██║█████╗   ╚████╔╝ "
+Write-Output "  ██║   ██║╚════██║╚════██║██║██╔══╝    ╚██╔╝  "
+Write-Output "  ╚██████╔╝███████║███████║██║██║        ██║   "
+Write-Output "   ╚═════╝ ╚══════╝╚══════╝╚═╝╚═╝        ╚═╝   "
+Write-Output ""                                              
+Write-Output "Written by Zamanry."
+Write-Output ""
 
-#Customizing Context Menus:
+###################################################
+Write-Output "Customizing Context Menus..."
 
-#Removal of 'Send to'
+#Removes 'Send to'
 Set-ItemProperty -Path "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\Send To" -Name (Default) -Value $NULL -Force 
 
-#Addition of 'Open PowerShell here'
+#Adds 'Open PowerShell here'
 New-Item -Path HKEY_CLASSES_ROOT\Directory\shell -name PowerShellMenu -Type Directory
 Set-ItemProperty -Path HKEY_CLASSES_ROOT\Directory\shell\PowerShellMenu -Name (Default) -Value "Open PowerShell here" 
 New-Item -Path HKEY_CLASSES_ROOT\Directory\shell\PowerShellMenu' -name 'command -Type Directory
 Set-ItemProperty -Path HKEY_CLASSES_ROOT\Directory\shell\PowerShellMenu\command -Name (Default) -Value "C:\Windows\System32\WindowsPowerShell\v1.0 -NoExit -Command Set-Location -LiteralPath '%L'"
 
-#Removal of 'Personalize'
+#Removes 'Personalize'
 Import-Module -Name .\Set-Owner.psm1
 Set-Owner -Path "HKEY_CLASSES_ROOT\DesktopBackground\Shell\Personalize" -Recurse
 Remove-item -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell -name Personalize
 
-#Removal of 'Display'
+#Removes 'Display'
 Set-Owner -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell\Display -Recurse
 Remove-item -Path HKEY_CLASSES_ROOT\DesktopBackground\Shell -name Display
 
-#Flush DNS
+Write-Output "Done."
+
+###################################################
+Write-Ouput "Flushing..."
+
+#Flushes DNS
 Ipconfig /flushdns
 
-#Removal of built-in apps:
+Write-Output "Done."
+
+###################################################
+Write-Output "Removing bloatware..."
+
+#Removes built-in apps:
 $Apps =
 'Microsoft.3DBuilder',
 'Microsoft.Appconnector',
@@ -114,7 +134,12 @@ do {
     $CrntApp = $Apps[$Index]
 } while ($CrntApp -ne $NULL)
 
-#Disable unnecessary network components
+Write-Output "Done."
+
+###################################################
+Write-Output "Reducing network connections..."
+
+#Disables unnecessary network components
 Write-Host Disabling network components.
 Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_tcpip6'
 Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_rspndr'
@@ -124,28 +149,27 @@ Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_msclient'
 Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_pacer'
 Disable-NetAdapterBinding -Name "*" -ComponentID 'ms_server'
 
-#Disable IPv6 completely
+#Disables IPv6 completely
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services" -Name "DisabledComponents" -Type DWORD -Value "0xFF" -Force 
 
-#Disable 'Register this connection's addresses in DNS'
+#Disables 'Register this connection's addresses in DNS'
 $NIC = Get-WmiObject Win32_NetworkAdapterConfiguration -filter "ipenabled = 'true'"
 $NIC.SetDynamicDNSRegistration($false)
 
-#Disable NetBIOS over TCP/IP
+#Disables NetBIOS over TCP/IP
 $NIC.SetTcpipNetbios(2)
 
-#Disable LMHosts lookup
+#Disables LMHosts lookup
 $NIC = [wmiclass]'Win32_NetworkAdapterConfiguration'
 $NIC.enablewins($false,$false)
 
 #Disables IGMP
 Netsh interface ipv4 set global mldlevel = none
 
-#Disable memory dumps
-Wmic recoveros set DebugInfoType = 0
+Write-Output "Done."
 
-#Disable File Explorer Sharing Wizard
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SharingWizardOn" -Value 0
+###################################################
+Write-Output "Disabling unnecessary protocols..."
 
 DisableProtocol() {
     if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" == false) {
@@ -165,27 +189,27 @@ DisableProtocol() {
     }
 }
 
-#Disable PCT 1.0
+#Disables PCT 1.0
 $Protocol = "PCT 1.0"
 DisableProtocol()
 
-#Disable SSL 2.0
+#Disables SSL 2.0
 $Protocol = "SSL 2.0"
 DisableProtocol()
 
-#Disable SSL 3.0
+#Disables SSL 3.0
 $Protocol = "SSL 3.0"
 DisableProtocol()
 
-#Disable TLS 1.0
+#Disables TLS 1.0
 $Protocol = "TLS 1.0"
 DisableProtocol()
 
-#Disable TLS 1.1
+#Disables TLS 1.1
 $Protocol = "TLS 1.1"
 DisableProtocol()
 
-#Enable TLS 1.2 (No other SSL or TLS versions are enabled)
+#Enables TLS 1.2 (No other SSL or TLS versions are enabled)
 $Protocol = "TLS 1.2"
 if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol" == false) {
     New-Item -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols" -name "$Protocol" -Type Directory
@@ -208,7 +232,23 @@ else {
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" -Type DWORD -Name "chUseStrongCrypto" -Value 1
 }
 
-# Call the desired tweak functions
+Write-Output "Done."
+
+###################################################
+Write-Output "Performing miscellaneous tweaks..."
+
+#Disables memory dumps
+Wmic recoveros set DebugInfoType = 0
+
+#Disables File Explorer Sharing Wizard
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SharingWizardOn" -Value 0
+
+Write-Output "Done."
+
+###################################################
+Write-Output "Performing miscellaneous tweaks..."
+
+# Calls the desired tweak functions
 Import-Module .\Tweaks.psm1
 $tweaks | ForEach { Invoke-Expression $_ }
 
