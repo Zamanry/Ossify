@@ -1,13 +1,13 @@
-Write-Output ""
-Write-Output "   ██████╗ ███████╗███████╗██╗███████╗██╗   ██╗"
-Write-Output "  ██╔═══██╗██╔════╝██╔════╝██║██╔════╝╚██╗ ██╔╝"
-Write-Output "  ██║   ██║███████╗███████╗██║█████╗   ╚████╔╝ "
-Write-Output "  ██║   ██║╚════██║╚════██║██║██╔══╝    ╚██╔╝  "
-Write-Output "  ╚██████╔╝███████║███████║██║██║        ██║   "
-Write-Output "   ╚═════╝ ╚══════╝╚══════╝╚═╝╚═╝        ╚═╝   "
-Write-Output ""                                              
-Write-Output "Written by Zamanry."
-Write-Output ""
+Write-Output "##################################################"
+Write-Output "#                                                #"
+Write-Output '#    .aMMMb  .dMMMb  .dMMMb  dMP dMMMMMP dMP dMP #'
+Write-Output '#   dMP"dMP dMP" VP dMP" VP amr dMP     dMP.dMP  #'
+Write-Output '#  dMP dMP  VMMMb   VMMMb  dMP dMMMP    VMMMMP   #'
+Write-Output '# dMP.aMP dP .dMP dP .dMP dMP dMP     dA .dMP    #'
+Write-Output '# VMMMP"  VMMMP"  VMMMP" dMP dMP      VMMMP"     #'
+Write-Output "#                                                #"
+Write-Output "# Written by Zamanry.                            #"
+Write-Output "##################################################"
 
 ###################################################
 Write-Output "Customizing Context Menus..."
