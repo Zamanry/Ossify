@@ -325,7 +325,7 @@ Write-Warning 'Setting UAC level to High...'
 #################################################################
 Write-Host 'Tweaking your sytem based on your tweaks...'
 	Import-Module -Name '.\Tweaks.psm1'
-	$tweaks | ForEach {
+	$Tweaks | ForEach {
 		Invoke-Expression $_
 	}
 

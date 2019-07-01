@@ -7,7 +7,7 @@
 ##########
 
 # Zamanry's preset
-$tweaks = @(
+$Tweaks = @(
 	### Require administrator privileges ###
 	"RequireAdmin",
 
@@ -32,7 +32,7 @@ $tweaks = @(
 	"DisableWAPPush",               # "EnableWAPPush",
 
 	### Security Tweaks ###
-	# "SetUACLow",                  
+	# "SetUACLow",
 	"SetUACHigh",
 	# "EnableSharingMappedDrives",  "DisableSharingMappedDrives",
 	"DisableAdminShares",           # "EnableAdminShares",
@@ -759,7 +759,7 @@ Function EnableCIMemoryIntegrity {
 	Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Type DWord -Value 1
 }
 
-# Disable Core Isolation Memory Integrity - 
+# Disable Core Isolation Memory Integrity -
 Function DisableCIMemoryIntegrity {
 	Write-Output "Disabling Core Isolation Memory Integrity..."
 	Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -ErrorAction SilentlyContinue
