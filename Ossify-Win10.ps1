@@ -355,7 +355,7 @@ Write-Warning 'Disabling Windows services...'
 		'wercplsupport', # Problem Reports & Solutions Control Panel
 		'TroubleshootingSvc', # Recommended Troubleshooting Service
 		'SessionEnv', # Remote Desktop Configuration
-		'TermService', # Remote Desjtop Service
+		'TermService', # Remote Desktop Service
 		'UmRdpService', # Remote Desktop Services UserMode Port Redirector
 		'RpcLocator', # Remote Procedure Call (RPC) Locator
 		'RetailDemo', # Retail Demo Service
